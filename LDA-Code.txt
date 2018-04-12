@@ -1,10 +1,10 @@
 %LDA code%
 
-%Load training data usually 80%, so it appears as a table in Matlab. The text should appear under a column with header 'text'%
+						%Load training data usually 80%, so it appears as a table in Matlab. The text should appear under a column with header 'text'%
 
-head(Automotive2);	%preview data%
+head(Automotive2);				%preview data,change variable name as per requirement%
 
-% preprocessed.m/ This is the preprocessing function required to preprocess the data%
+						% preprocessed.m/ This is the preprocessing function required to preprocess the data%
 %function [X]=preprocessed(textdata)
 cleandata=erasePunctuation(textdata);
 cleandata=lower(cleandata);
@@ -23,11 +23,13 @@ cvp = cvpartition(numDocuments,'HoldOut',0.1);
 documentsTrain = documents(cvp.training);
 documentsValidation = documents(cvp.test);
 
-% the data is divided as 90% training and 10% validation data, with cross validation%
+						% the data is divided as 90% training and 10% validation data, with cross validation%
 
 bag=bagOfWords(documentsTrain);
 bag=removeEmptyDocuments(bag);
-numTopicsRange = [5 10 15 20 40];	%change as per requirement%
+aof=sum(sum(bag.Counts(:)))/bag.NumWords;	%delete if not required%
+bag=removeInfrequentWords(bag,aof);		%delete if not required%
+numTopicsRange = [5 10 15 20 40];		%change as per requirement%
 for i = 1:numel(numTopicsRange)
     numTopics = numTopicsRange(i);
     
@@ -52,11 +54,28 @@ ylabel("Time Elapsed (s)")
 legend(["Validation Perplexity" "Time Elapsed (s)"],'Location','southeast')
 xlabel("Number of Topics")
 
-%choose number of topics as per requirement to run the model%
-%We need to load our test data again%
-%Use your test data and load it in documents variable. Create a bag of words model again on it%
+						%choose number of topics as per requirement to run the model%
+						%We need to load our test data again%
+						%Use your test data and load it in documents variable. Create a bag of words model again on it%
 
-numTopics = 10;
+head(Automotive1);				%preview data,change variable name as per requirement%
+
+						% preprocessed.m/ This is the preprocessing function required to preprocess the data%
+%function [X]=preprocessed(textdata)
+cleandata=erasePunctuation(textdata);
+cleandata=lower(cleandata);
+cleandocs=tokenizedDocument(cleandata);
+removwords=removeWords(cleandocs,stopWords);
+removwords=removeShortWords(removwords,2);
+removwords=removeLongWords(removwords,15);
+normal=normalizeWords(removwords);
+X=normal;
+end%
+
+textdata=Automotive1.text;
+documents=preprocessed(textdata);
+
+numTopics = 10;					%change as per requirement%					
 mdl = fitlda(bag,numTopics);
 
 %fit the model, run lda, get the keywords based on their probablities. You can also plot using WordCloud function for a given topic%
