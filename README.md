@@ -4,3 +4,4 @@ Make sure to have your data in an .xls format with strings in cloumns with a spe
 The preprocessed function normalizes words for a bag of words model.
 Run the code in parts.
 The Average occurence frequency is defined as given by 'Ref:S.Kr. Biswas et al. / Expert Systems With Applications 97 (2018) 51–59'
+//Thanks//https://www.mathworks.com/help/textanalytics/examples/choose-number-of-topics-for-LDA-model.html
