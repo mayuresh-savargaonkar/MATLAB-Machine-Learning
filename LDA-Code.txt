@@ -1,0 +1,65 @@
+%LDA code%
+
+%Load training data usually 80%, so it appears as a table in Matlab. The text should appear under a column with header 'text'%
+
+head(Automotive2);	%preview data%
+
+% preprocessed.m/ This is the preprocessing function required to preprocess the data%
+%function [X]=preprocessed(textdata)
+cleandata=erasePunctuation(textdata);
+cleandata=lower(cleandata);
+cleandocs=tokenizedDocument(cleandata);
+removwords=removeWords(cleandocs,stopWords);
+removwords=removeShortWords(removwords,2);
+removwords=removeLongWords(removwords,15);
+normal=normalizeWords(removwords);
+X=normal;
+end%
+
+textdata=Automotive2.text;
+documents=preprocessed(textdata);
+numDocuments = numel(documents);
+cvp = cvpartition(numDocuments,'HoldOut',0.1);
+documentsTrain = documents(cvp.training);
+documentsValidation = documents(cvp.test);
+
+% the data is divided as 90% training and 10% validation data, with cross validation%
+
+bag=bagOfWords(documentsTrain);
+bag=removeEmptyDocuments(bag);
+numTopicsRange = [5 10 15 20 40];	%change as per requirement%
+for i = 1:numel(numTopicsRange)
+    numTopics = numTopicsRange(i);
+    
+    mdl = fitlda(bag,numTopics, ...
+        'Solver','savb', ...
+        'DataPassLimit',10,...
+        'Verbose',0);
+    
+    [~,validationPerplexity(i)] = logp(mdl,documentsValidation);
+    timeElapsed(i) = mdl.FitInfo.History.TimeSinceStart(end);
+end
+
+figure
+yyaxis left
+plot(numTopicsRange,validationPerplexity,'+-')
+ylabel("Validation Perplexity")
+
+yyaxis right
+plot(numTopicsRange,timeElapsed,'o-')
+ylabel("Time Elapsed (s)")
+
+legend(["Validation Perplexity" "Time Elapsed (s)"],'Location','southeast')
+xlabel("Number of Topics")
+
+%choose number of topics as per requirement to run the model%
+%We need to load our test data again%
+%Use your test data and load it in documents variable. Create a bag of words model again on it%
+
+numTopics = 10;
+mdl = fitlda(bag,numTopics);
+
+%fit the model, run lda, get the keywords based on their probablities. You can also plot using WordCloud function for a given topic%
+figure
+wordcloud(mdl,10)
+

@@ -1,0 +1,15 @@
+Code
+% Code for TF-IDF with average Occurence Frequency %  
+
+head(Automotive2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+textdata=Automotive2.text;
+head(textdata);
+documents=preprocessed(textdata);
+bag=bagOfWords(documents);
+bag=removeEmptyDocuments(bag);
+aof=sum(sum(bag.Counts(:)))/bag.NumWords;
+bag=removeInfrequentWords(bag,aof);
+m=tfidf(bag);
+x=full(m);
+
+%The keywords and their tf-idf score are represented in matrix 'x'%
