@@ -2,7 +2,7 @@
 
 						%Load training data usually 80%, so it appears as a table in Matlab. The text should appear under a column with header 'text'%
 
-head(Automotive2);				%preview data,change variable name as per requirement%
+head(Automotive2)				%preview data,change variable name as per requirement%
 
 						% preprocessed.m/ This is the preprocessing function required to preprocess the data%
 %function [X]=preprocessed(textdata)
@@ -19,13 +19,13 @@ end%
 textdata=Automotive2.text;
 documents=preprocessed(textdata);
 numDocuments = numel(documents);
-cvp = cvpartition(numDocuments,'HoldOut',0.1);
+cvp = cvpartition(numDocuments,'HoldOut',0.1);	%cross validation data can be changed, currently set to 0.9/0.1%
 documentsTrain = documents(cvp.training);
 documentsValidation = documents(cvp.test);
 
 						% the data is divided as 90% training and 10% validation data, with cross validation%
 
-bag=bagOfWords(documentsTrain);
+bag=bagOfWords(documentsTrain);			%LDA requires BOW model wherein each word is a length vector%
 bag=removeEmptyDocuments(bag);
 aof=sum(sum(bag.Counts(:)))/bag.NumWords;	%delete if not required%
 bag=removeInfrequentWords(bag,aof);		%delete if not required%
@@ -74,6 +74,7 @@ end%
 
 textdata=Automotive1.text;
 documents=preprocessed(textdata);
+bag=bagOfWords(documents);
 
 numTopics = 10;					%change as per requirement%					
 mdl = fitlda(bag,numTopics);
